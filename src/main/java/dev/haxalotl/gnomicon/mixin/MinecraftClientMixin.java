@@ -16,22 +16,9 @@ import java.nio.file.Path;
 
 @Mixin(value = MinecraftClient.class, priority = Integer.MAX_VALUE)
 public class MinecraftClientMixin {
-    private String configString;
-    private String windowName;
-
-    public void getWindowTitle() {
-        try {
-            configString = String.join(" ", Files.readAllLines(Path.of(FabricLoader.getInstance().getConfigDir() + "/gnomicon/gnomicon.json")));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        JsonObject gnomiconConfig = JsonParser.parseString(configString).getAsJsonObject();
-        windowName = gnomiconConfig.get("name").getAsString();
-    }
-
     @ModifyReturnValue(method="getWindowTitle", at = @At("RETURN"))
     private String gnomicon$getWindowTitle(String original) {
-        return System.getProperty("title") != null ? System.getProperty("title") : windowName;
+        return System.getProperty("title") != null ? System.getProperty("title") : "Minecraft";
     }
 
 

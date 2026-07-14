@@ -1,29 +1,32 @@
 package dev.haxalotl.gnomicon;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 public class GNOMiconConfig {
 
     public String configString;
     public String windowName;
-    public String iconPath;
+    public String iconName;
+
+    private Path configPath = Path.of(FabricLoader.getInstance().getConfigDir() + "/gnomicon");
+    private Path jsonPath = Path.of(configPath + "/gnomicon.json");
+    private Path iconPath = Path.of(configPath + "/icon.png");
+
 
     public void createConfig() {
         try {
-            if (Files.notExists(Path.of(FabricLoader.getInstance().getConfigDir() + "/gnomicon"))) {
-                Files.createDirectory(Path.of(FabricLoader.getInstance().getConfigDir() + "/gnomicon"));
+            if (Files.notExists(configPath)) {
+                Files.createDirectory(configPath);
             }
 
-            if (Files.notExists(Path.of(FabricLoader.getInstance().getConfigDir() + "/gnomicon/gnomicon.json"))) {
-                Files.createFile(Path.of(FabricLoader.getInstance().getConfigDir() + "/gnomicon/gnomicon.json"));
-                Files.writeString(Path.of(FabricLoader.getInstance().getConfigDir() + "/gnomicon/gnomicon.json"),
+            if (Files.notExists(jsonPath)) {
+                Files.createFile(jsonPath);
+                Files.writeString(jsonPath,
                         "{\n" +
                                 "\"name\":\"Minecraft\",\n".indent(4) +
                                 "\"icon\":\"icon.png\"\n".indent(4) +
@@ -31,8 +34,8 @@ public class GNOMiconConfig {
                 );
             }
 
-            if (Files.notExists(Path.of(FabricLoader.getInstance().getConfigDir() + "/gnomicon/icon.png"))) {
-                Files.copy(FabricLoader.getInstance().getModContainer("gnomicon").orElseThrow().findPath("assets/gnomicon/icon.png").orElseThrow(), Path.of(FabricLoader.getInstance().getConfigDir() + "/gnomicon/icon.png"));
+            if (Files.notExists(iconPath)) {
+                Files.copy(FabricLoader.getInstance().getModContainer("gnomicon").orElseThrow().findPath("assets/gnomicon/icon.png").orElseThrow(), iconPath);
             }
 
         } catch (Exception e) {
@@ -51,7 +54,7 @@ public class GNOMiconConfig {
         JsonObject gnomiconConfig = JsonParser.parseString(configString).getAsJsonObject();
         System.out.println(gnomiconConfig.get("name").getAsString());
         windowName = gnomiconConfig.get("name").getAsString();
-        iconPath = gnomiconConfig.get("icon").getAsString();
+        iconName = gnomiconConfig.get("icon").getAsString();
     }
 
 }
